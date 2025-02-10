@@ -18,7 +18,7 @@ export default function SearchBar({query,setQuery}){
       className={`w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm ${styles["text-sm-modified"]} border border-slate-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow`}
       placeholder="Question Name"
       value={query}
-      onChange={(e) => {setQuery(e.target.value); console.log(query)}}
+      onChange={(e) => setQuery(e.target.value)}
       onKeyDown={(e)=>handleEnter(e)}
       />
     <button className={styles["button-49"]} onClick={()=>navigate('/search')}>Search</button>

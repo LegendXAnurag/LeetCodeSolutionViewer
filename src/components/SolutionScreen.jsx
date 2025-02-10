@@ -10,7 +10,7 @@ import HomeButton from "./HomeButton";
 const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 
 function splitQuestionSolution(text) {
-    let parts = text.split(/^\s*\*{10,}\/\s*$/m, 2);
+    let parts = text.split(/^\s*\*{10,}\/?\s*$/m, 2);
     let question, solution;
     if (parts.length === 2) {
         question = parts[0]?.trim() || "";
@@ -40,7 +40,6 @@ export default function SolutionScreen({ query, setQuery }) {
         "Python": ".py"
     };
 
-    // ⬇️ Use state to store question and solutions
     const [question, setQuestion] = useState("");
     const [solutions, setSolutions] = useState({});
 
@@ -49,17 +48,20 @@ export default function SolutionScreen({ query, setQuery }) {
             let tempSolutions = {};
             let tempQuestion = "";
 
-            // Store all promises in an array
             let promises = lang.map(async (element) => {
-                let urls= [ `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFolder}/${qFile + extension[element]}?ref=master`,
-                 `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFolder}/${qFolder + extension[element]}?ref=master`,
-                 `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFile}/${qFile + extension[element]}?ref=master`,
-                 `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFile}/${qFolder + extension[element]}?ref=master`]
+                let urls = [
+                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFolder}/${qFile + extension[element]}?ref=master`,
+                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFolder}/${qFolder + extension[element]}?ref=master`,
+                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFile}/${qFile + extension[element]}?ref=master`,
+                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/${qFile}/${qFolder + extension[element]}?ref=master`
+                ];
                 if (element === "Java") {
-                    urls = [`https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFolder}/${qFile + extension[element]}?ref=master`,
-                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFolder}/${qFolder + extension[element]}?ref=master`,
-                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFile}/${qFile + extension[element]}?ref=master`,
-                    `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFile}/${qFolder + extension[element]}?ref=master`]
+                    urls = [
+                        `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFolder}/${qFile + extension[element]}?ref=master`,
+                        `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFolder}/${qFolder + extension[element]}?ref=master`,
+                        `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFile}/${qFile + extension[element]}?ref=master`,
+                        `https://api.github.com/repos/haoel/leetcode/contents/algorithms/${languages[element]}/src/${qFile}/${qFolder + extension[element]}?ref=master`
+                    ];
                 }
                 for (let i = 0; i < urls.length; i++) {
                     const url = urls[i];   
@@ -72,7 +74,6 @@ export default function SolutionScreen({ query, setQuery }) {
     
                         const temp = splitQuestionSolution(atob(response.data.content));
     
-                        // Set question only if it's empty and solution exists
                         if (element === "C++" || (element === "Java" && tempQuestion === "")) {
                             if (temp.question !== "") {
                                 tempQuestion = temp.question;
@@ -82,34 +83,31 @@ export default function SolutionScreen({ query, setQuery }) {
                         break;
                     } catch (error) {
                         console.error("Error fetching:", error);
-                        console.log("Not working url",url)
+                        console.log("Not working url", url);
                     }
                 }
             });
 
             await Promise.all(promises);
-
-            // ⬇️ Update state after fetching all solutions
             setQuestion(tempQuestion);
             setSolutions(tempSolutions);
         };
 
         fetchSolutions();
-    }, []); // Only run once on mount
+    }, []);
 
     return (
-        <div className="w-full flex flex-col h-[100vh] px-[2rem]">
+        <div className="w-full flex flex-col h-screen px-4 md:px-8">
             <div className="w-full flex justify-center items-center">
-                <HomeButton/>
+                <HomeButton />
                 <SearchBar query={query} setQuery={setQuery} />
             </div>
 
-            <div className="flex-1 flex mt-[30px] justify-between ">
-                <div>
+            <div className="flex-1 flex flex-col md:flex-row mt-6 gap-4">
+                <div className="w-full md:w-1/3">
                     <QSide qTitle={qTitle} qno={qno} question={question} difficulty={difficulty} />
                 </div>
-                {/* <div className="w-[0.5%] bg-black/60 max-h-[80vh]"></div> */}
-                <div className="flex-1">
+                <div className="w-full md:w-2/3">
                     <SolutionSide solutions={solutions} />
                 </div>
             </div>

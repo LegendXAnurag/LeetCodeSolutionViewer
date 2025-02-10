@@ -26,6 +26,7 @@
 import SearchedItem from "./SearchedItem";
 
 export default function SearchResults({ query, questions }) {
+  console.log(questions)
   let filtered = query === "" ? questions : questions.filter(
     (question) =>
       question.questionNumber.includes(query) ||
