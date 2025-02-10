@@ -11,6 +11,7 @@ export default function QSide({ qTitle, qno, question, difficulty }) {
   question = question.replace(/\n\/\/ /g,"\n");
   question = question.replace(/\/\*+/g,"");
   question = question.replace(/\n *\* /g,"\n");
+  
   return (
     <div className="w-[30vw] h-[80vh] overflow-y-auto overflow-x-hidden p-4 bg-white border border-gray-300 rounded-lg shadow-md">
   <pre className="whitespace-pre-wrap break-words text-gray-800 text-lg leading-relaxed">
